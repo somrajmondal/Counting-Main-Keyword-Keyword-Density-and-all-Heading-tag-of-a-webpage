@@ -1,0 +1,41 @@
+import bs4
+import requests
+
+def counting_main_keyword(url_list,raw_keyword):
+    for url in url_list:
+        res = requests.get(url)
+        soup = bs4.BeautifulSoup(res.content.lower(), 'lxml')
+        total_words = []
+        words = soup.find_all(text=lambda text: text and raw_keyword.lower() in text)
+        count = len(words)
+        for word in words:
+            total_words.append(word.strip())
+        all_text = ' '.join(soup.stripped_strings)
+        total_word_count = len(all_text.split())
+        Keyword_density = (count/total_word_count)*100
+        print(f'URL: {url}\nNumber of Usages: {count}')
+        print(f'Keyword Density: {Keyword_density}')
+
+
+def heading_scaper(url_list,raw_main_keyword):
+    heading_tags = ["h1","h2","h3","h4","h5"]
+    main_keyword = raw_main_keyword.lower()
+    for url in url_list:
+        connect_request=requests.get(url)
+        soup = bs4.BeautifulSoup(connect_request.text.lower(),'html.parser')
+        print(f'URL: {url}')
+        print(f'Main Keyword: {main_keyword}')
+        searching_tags = soup.find_all(heading_tags)
+        for htag in searching_tags:
+            res = htag.name + ': ' + htag.text
+            print(res)
+
+if __name__ == "__main__":
+    url = input("Enter a URL: ")
+    raw_keyword = input("Enter Main keyword: ")
+    url_list = [url]
+    counting_main_keyword(url_list, raw_keyword)
+    heading_scaper(url_list, raw_keyword)
+
+
+
